@@ -15,6 +15,7 @@ import com.example.user.UserRepository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Optional;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -114,5 +115,46 @@ public class UserRepositoryTests {
         User user = userRepository.findById(user0.getId()).get();
         // then
         assertThat(user.getId()).isNotEqualTo(0L);
+    }
+
+    @Test
+    @DisplayName("Test para actualizar un user")
+    public void testUpdateUser() {
+
+        // given
+
+        userRepository.save(user0);
+
+        // when
+
+        User userGuardado = userRepository.findByEmail(user0.getEmail()).get();
+
+        userGuardado.setFirstName("BLABA");
+        userGuardado.setLastName("Penkn");
+        userGuardado.setEmail("j@pp.com");
+
+        User userUpdated = userRepository.save(userGuardado);
+
+        // then
+
+        assertThat(userUpdated.getEmail()).isEqualTo("j@pp.com");
+        assertThat(userUpdated.getFirstName()).isEqualTo("BLABA");
+        assertThat(userUpdated.getLastName()).isEqualTo("Penkn");
+
+    }
+
+    @Test
+    @DisplayName("Test para eliminar un user")
+    public void testDeleteUser() {
+
+        // given
+        userRepository.save(user0);
+
+        // When
+        userRepository.delete(user0);
+        Optional<User> optionalUser = userRepository.findByEmail(user0.getEmail());
+
+        // then
+        assertThat(optionalUser).isEmpty();
     }
 }
